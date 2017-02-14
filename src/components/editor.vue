@@ -8,21 +8,12 @@
       </div>
       <div class="meta-field">
         <label>NPC: </label>
-        <input type="text" v-model="npc">
+        <input type="text" :value="npc" @change="updateNpc">
       </div>
     </section>
 
     <section>
-      <template><!-- exchange -->
-        <div>
-          <label>{{npc}}</label>
-          <npc-verbalization></npc-verbalization>
-        </div>
-        <div>
-          <label>Player</label>
-          <pc-choice></pc-choice>
-        </div>
-      </template>
+      <exchange v-for="exchange in exchanges" :id="exchange.id"></exchange>
       <aside>
         <!-- conversation tree diagram. allows you to click to form relationships? -->
       </aside>
@@ -36,27 +27,44 @@
   - Given whoever starts one of two Template-Blocks is rendered: <line><choice> or <choice><line>
   - This Template-Block is repeated for however many lines the author creates FOR THE THREAD.
   - For each template-block, a Lines or Choice is allowed to be empty (but never both).
-
   ----------
   - If empty blocks are allowable, I can kill the Starts With [PC|NPC] selector, and just use a blank.
   - lines and choices need id's, utterance
-
   ----------
-  Anatomy of a Script: http://www.shortlist.com/entertainment/films/the-anatomy-of-a-film-script
+  - Anatomy of a Script: http://www.shortlist.com/entertainment/films/the-anatomy-of-a-film-script
+  ----------
+  - An Exchange is a Verbalization that has one-to-manyChoice(s).
+  - A Choice is a Verbalization that has one Exchange.
    */
-  import NpcVerbalization from 'components/verbalization';
-  import PcChoice from 'components/choice';
+  import Exchange from 'components/exchange';
+
+  import {mapActions, mapState} from 'vuex';
+  import {types} from '../store';
 
   export default {
     components: {
-      NpcVerbalization,
-      PcChoice
+      Exchange,
     },
-    data () {
+    computed: {
+      ...mapState({
+        exchanges: state => state.exchanges,
+        npc: state => state.npc,
+      })
+    },
+    data() {
       return {
-        npc: '',
-        title: '',
+        title: ''
       };
+    },
+    methods: {
+      ...mapActions({
+        updateNpc: types.npc
+      }),
+    },
+    mounted() {
+      if (!this.exchanges.length) {
+        this.$store.dispatch(types.createExchange);
+      }
     },
     name: 'editor'
   }

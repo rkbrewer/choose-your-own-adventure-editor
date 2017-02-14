@@ -1,8 +1,8 @@
 <template>
   <span class="choice">
-    <verbalization></verbalization>
+    <verbalization v-if="choice.verbalization" :id="choice.verbalization"></verbalization>
     <div class="toolbox-hover-top">
-      <button @click="createChoice">New Choice</button>
+      <button @click="createAnotherChoice">Create Another Choice</button>
       <select>
         <option v-for="choice in choices" :value="choice.id">{{choice.text}}</option>
       </select>
@@ -11,22 +11,32 @@
 </template>
 <script type="text/babel">
   import Verbalization from 'components/verbalization';
+  import {mapState} from 'vuex';
 
   export default {
     components: {
       Verbalization
     },
-    data() {
-      return {
-        choices: [],
-        choice: '',
-      };
+    computed: {
+      ...mapState({
+        choice(state) {
+          return state.choices.find(({id}) => id === this.id);
+        },
+      }),
     },
     methods: {
-      createChoice() {
-        // this.choices.push(new Utterance());
+      createAnotherChoice() {
+
       }
     },
+    mounted() {
+      if (!this.choice.verbalization) {
+        this.$store.dipatch(types.createVerbalization, this.choice);
+      }
+    },
+    props: [
+      'id'
+    ]
   };
 </script>
 <style>

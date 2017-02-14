@@ -4,8 +4,9 @@ import Vuex from 'vuex';
 import {Choice, Exchange, Verbalization} from 'lib';
 
 const types = {
-  createChoice: 'addChoice',
-  createExchange: 'addExchange',
+  createChoice: 'createChoice',
+  createExchange: 'createExchange',
+  createVerbalization: 'createVerbalization',
   editVerbalization: 'editVerbalization',
   npc: 'npc'
 };
@@ -13,21 +14,33 @@ const types = {
 Vue.use(Vuex);
 const store = new Vuex.Store({
   actions: {
-    [types.createChoice]({commit, state}) {
-      commit(types.createChoice, new Choice());
-    },
-    [types.createExchange]({commit}) {
-      commit(types.createExchange, new Exchange());
-    },
-    [types.editVerbalization]({commit, state}, text) {
+    [types.createChoice]({commit, state}, exchange) {
+      const choice = new Choice();
+      const verbalization = new Verbalization();
 
+      choice.verbalization = verbalization.id;
+      exchange.choices.push(choice.id);
+
+      commit(types.createChoice, choice);
+      commit(types.createVerbalization, verbalization);
     },
-    [types.editPcChoice]({commit, state}, text) {
-      let verbalization = state.currentExchange.filter(v => v.id === state.currentVerbalization);
-      verbalization.text = text;
+    [types.createExchange]({commit}, choice) {
+      const exchange = new Exchange();
+      if (choice) {
+        choice.exchange = exchange.id;
+      }
+      commit(types.createExchange, exchange);
     },
-    [types.npc]({commit}, npc) {
-      commit(types.npc, npc);
+    [types.createVerbalization]({commit}, item) {
+      const verbalization = new Verbalization();
+      item.verbalization = verbalization.id;
+      commit(types.createVerbalization, verbalization);
+    },
+    [types.editVerbalization]({commit}, {id, text}) {
+      commit(types.editVerbalization, {id, text});
+    },
+    [types.npc]({commit}, event) {
+      commit(types.npc, event.target.value);
     },
   },
 
@@ -38,8 +51,11 @@ const store = new Vuex.Store({
     [types.createExchange](state, exchange) {
       state.exchanges.push(exchange);
     },
-    [types.editVerbalization](state, id, text) {
-      state.verbalizations.filter[id][0].text = text;
+    [types.createVerbalization](state, verbalization) {
+      state.verbalizations.push(verbalization);
+    },
+    [types.editVerbalization](state, {id, text}) {
+      state.verbalizations.find(item => item.id === id).text = text;
     },
     [types.npc](state, npc) {
       state.npc = npc;
@@ -126,24 +142,25 @@ const roughDraft3 = {
 
 // Go with this one. It's easier to code against.
 /*
-As a user, push a button to add a choice to start writing on.
-As I type, I see a button I can push to create an exchange to tie to this choice. This means
-when I create a choice, I don't immediately have to create a consequential exchange. I can do this after I'm done typing.
-Once a choice has text in it, the UI should always show the 'New Consequence' button.
+ As a user, push a button to add a choice to start writing on.
+ As I type, I see a button I can push to create an exchange to tie to this choice. This means
+ when I create a choice, I don't immediately have to create a consequential exchange. I can do this after I'm done typing.
+ Once a choice has text in it, the UI should always show the 'New Consequence' button.
 
-Same for Exchanges:
-The UI initializes with one Exchange & one Choice (tied to that exchange), both of which have empty verbalizations (you just see the labels).
-As I type an npc's verbalization, nothing happens on screen (behind the scenes it's vuex-updating);
-I then type into the choice verbalization and a New Consequence button appears.
-  (TODO If I click this do I make a new Exchange+Choice? Or just new Exchange?)
-But for now I ignore the New Consequence button because I want to make another Choice.
-  (TODO do I look up to the npc's verbalization and see an Add Another Choice button? Or do I look to where I'm writing?)
+ Same for Exchanges:
+ The UI initializes with one Exchange & one Choice (tied to that exchange), both of which have empty verbalizations (you just see the labels).
+ As I type an npc's verbalization, nothing happens on screen (behind the scenes it's vuex-updating);
+ I then type into the choice verbalization and a New Consequence button appears.
+ (TODO If I click this do I make a new Exchange+Choice? Or just new Exchange?)
+ But for now I ignore the New Consequence button because I want to make another Choice.
+ (TODO do I look up to the npc's verbalization and see an Add Another Choice button? Or do I look to where I'm writing?)
  */
+
 // Does creating a new Choice create a new Exchange? No. Because a Choice could point to an existing Exchange.
 // Push a button to createChoice, then immediately setConsequentialExchange or createExchange (which then automatically sets this as the conesequential exchange)
 const roughDraft4 = {
   exchanges: [{id: 1, verbalization: 1, choices: [1,2]}, ...{}],
-  choices: [{id: 1, verbalization: 2, exchange: 2}, ...{}],
+  choices: [{id: 1, verbalization: 2, exchange: 2}, ...{}], // NOTE: this exchange is not its owner, but rather the one it leads to. There is not a 2 way binding here, like parentExchange. I could add 2-way relationship of parentExchange/childExchange(s)...
   verbalizations: [
     {id: 1, text: 'Who goes there?'},
     {id: 2, text: 'Me.'},
