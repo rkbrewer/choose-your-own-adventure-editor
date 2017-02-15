@@ -3,19 +3,19 @@
 
     <div class="npc-verbalization-container">
       <label>{{npc || 'NPC'}}</label>
-      <span v-if="!exchange || !exchange.verbalization" @click="onVerbalizationPlaceholderClick">Enter your line here...</span>
-      <npc-verbalization v-if="exchange && exchange.verbalization" :id="exchange.verbalization"></npc-verbalization>
+      <span v-if="!exchange || !exchange.verbalization" @click="createNpcVerbalization">Enter your line here...</span>
+      <verbalization v-if="exchange && exchange.verbalization" :id="exchange.verbalization"></verbalization>
     </div>
 
     <div class="choice-container">
       <label>Player</label>
       <span v-if="!exchange.choices.length" @click="createChoice">Enter your line here...</span>
 
-      <pc-choice v-if="activeChoice.id" :id="activeChoice.id"></pc-choice>
+      <choice v-if="activeChoice.id" :id="activeChoice.id"></choice>
 
       <div class="toolbox-hover-top">
         <button @click="createChoice">Create Another Choice</button>
-        <select :value="activeChoice.id" @change="activateChoice">
+        <select v-if="choices.length > 1" :value="activeChoice.id" @change="activateChoice">
           <option v-for="choice in choices" :value="choice.id">{{ textFrom(choice.verbalization) }}</option>
         </select>
       </div>
@@ -25,16 +25,16 @@
 </template>
 <script type="text/babel">
 
-  import NpcVerbalization from 'components/verbalization';
-  import PcChoice from 'components/choice';
+  import Verbalization from 'components/verbalization';
+  import Choice from 'components/choice';
 
   import {mapActions, mapState} from 'vuex';
   import {types} from '../store';
 
   export default {
     components: {
-      NpcVerbalization,
-      PcChoice
+      Verbalization,
+      Choice
     },
     computed: {
       ...mapState({
@@ -42,16 +42,6 @@
           const activeChoice = state.activeChoices.find(({exchangeId}) => this.id);
           return activeChoice ? state.choices.find(({id}) => id === activeChoice.choiceId) : {};
         },
-//        activeChoice(state) {
-//          if (!this.activeChoiceId) {
-//            return;
-//          }
-//          return state.choices.find(({id}) => id === this.activeChoiceId);
-//        },
-//        activeChoiceId(state) {
-//          const currentChoice = state.activeChoices.find(({exchangeId}) => this.id);
-//          return currentChoice ? currentChoice.choiceId : null;
-//        },
         choices(state) {
           return state.choices.filter(({id}) => this.exchange.choices.includes(id))
         },
@@ -67,7 +57,7 @@
         let choiceId = $event.target.value;
         this.$store.dispatch(types.activeChoices, {exchangeId, choiceId});
       },
-      onVerbalizationPlaceholderClick() {
+      createNpcVerbalization() {
         this.$store.dispatch(types.createVerbalization, this.exchange);
       },
       createChoice() {
