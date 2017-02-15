@@ -4,6 +4,7 @@ import Vuex from 'vuex';
 import {Choice, Exchange, Verbalization} from 'lib';
 
 const types = {
+  activeChoices: 'activeChoices',
   createChoice: 'createChoice',
   createExchange: 'createExchange',
   createVerbalization: 'createVerbalization',
@@ -14,16 +15,30 @@ const types = {
 Vue.use(Vuex);
 const store = new Vuex.Store({
   actions: {
+    [types.activeChoices]({commit}, {exchangeId, choiceId}) {
+      commit(types.activeChoices, {exchangeId, choiceId});
+    },
+    /**
+     *
+     * @param commit
+     * @param state
+     * @param exchange - the required parent of the choice, it will be given a reference to the choice.
+     */
     [types.createChoice]({commit, state}, exchange) {
-      const choice = new Choice();
-      const verbalization = new Verbalization();
+      const {choice, verbalization} = new Choice();
 
-      choice.verbalization = verbalization.id;
       exchange.choices.push(choice.id);
 
       commit(types.createChoice, choice);
       commit(types.createVerbalization, verbalization);
+      commit(types.activeChoices, {exchangeId: exchange.id, choiceId: choice.id});
     },
+
+    /**
+     *
+     * @param commit - vuex mutation caller
+     * @param choice - optional parent of the new exchange
+     */
     [types.createExchange]({commit}, choice) {
       const exchange = new Exchange();
       if (choice) {
@@ -31,6 +46,12 @@ const store = new Vuex.Store({
       }
       commit(types.createExchange, exchange);
     },
+
+    /**
+     *
+     * @param commit
+     * @param item - a required owner, either an exchange or a choice instance
+     */
     [types.createVerbalization]({commit}, item) {
       const verbalization = new Verbalization();
       item.verbalization = verbalization.id;
@@ -45,6 +66,11 @@ const store = new Vuex.Store({
   },
 
   mutations: {
+    [types.activeChoices](state, {exchangeId, choiceId}) {
+      // Swap out the old with the new
+      state.activeChoices = state.activeChoices.filter(item => item.exchangeId !== exchangeId);
+      state.activeChoices.push({exchangeId, choiceId});
+    },
     [types.createChoice](state, choice) {
       state.choices.push(choice);
     },
@@ -63,6 +89,7 @@ const store = new Vuex.Store({
   },
 
   state: {
+    activeChoices:[],
     choices: [],
     exchanges: [],
     npc: '',
@@ -167,27 +194,5 @@ const roughDraft4 = {
     {id: 3, text: 'Not me.'}
   ],
   // the "glue" that allows a conversation to be fully rendered. Active choices are NOT persisted, but here just for the UI.
-  activeChoices: [1,2]
-};
-
-const exchangeComponent = {
-  props: ['id'],
-  computed: {
-    exchange: state => state.exchanges.filter[this.id][0]
-  },
-};
-
-const choiceComponent = {
-  props: ['id'],
-  computed: {
-    choice: state => state.choices.filter[this.id][0]
-  },
-};
-
-const verbalizationComponent = {
-  props: ['id'],
-  computed: {
-    verbalization: state => state.verbalizations.filter[this.id][0]
-  },
-  template: `<span>{{verbalization.text}}</span>`
+  activeChoices: []
 };

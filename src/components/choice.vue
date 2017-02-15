@@ -1,12 +1,6 @@
 <template>
   <span class="choice">
     <verbalization v-if="choice.verbalization" :id="choice.verbalization"></verbalization>
-    <div class="toolbox-hover-top">
-      <button @click="createAnotherChoice">Create Another Choice</button>
-      <select>
-        <option v-for="choice in choices" :value="choice.id">{{choice.text}}</option>
-      </select>
-    </div>
   </span>
 </template>
 <script type="text/babel">
@@ -24,11 +18,6 @@
         },
       }),
     },
-    methods: {
-      createAnotherChoice() {
-
-      }
-    },
     mounted() {
       if (!this.choice.verbalization) {
         this.$store.dipatch(types.createVerbalization, this.choice);
@@ -39,14 +28,3 @@
     ]
   };
 </script>
-<style>
-  .choice {
-    position: relative;
-  }
-  .toolbox-hover-top {
-    display: none;
-    left: 0;
-    position: absolute;
-    top: -1rem;
-  }
-</style>

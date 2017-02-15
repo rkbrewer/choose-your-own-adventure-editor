@@ -16,7 +16,7 @@
     data() {
       return {
         text: this.$store.state.verbalizations.find(({id}) => id === this.id).text
-      }
+      };
     },
     methods: {
       updateStore(event) {
@@ -25,17 +25,18 @@
         this.$store.dispatch(types.editVerbalization, {id, text});
       }
     },
+    mounted() {
+      this.$el.focus();
+      this.$watch('id', function() {
+        this.text = this.$store.state.verbalizations.find(({id}) => id === this.id).text; // so why does this bomb when I move it to a computed...?
+        this.$el.textContent = this.text; // hack the contenteditable
+      });
+    },
     name: 'verbalization',
     props: [
       'id'
     ]
   };
-
-  // https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
-  // 48 - 90 are good, 96-111 are good, 186-192, and 219-222
-  function allowed(code) {
-    return (code > 47 && code < 91) || code > 95 && code < 112 || code > 185 && code < 193 || code > 218 && code < 223;
-  }
 </script>
 <style>
   .verbalization {

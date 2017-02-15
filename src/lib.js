@@ -1,8 +1,15 @@
 class Choice {
   constructor() {
-    this.exchange = null;
+    this.exchange = null; // child exchange
     this.id = _uid();
-    this.verbalization = null;
+
+    const verbalization = new Verbalization();
+    this.verbalization = verbalization.id;
+
+    return {
+      choice: this,
+      verbalization
+    };
   }
 }
 

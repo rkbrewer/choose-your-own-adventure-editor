@@ -71,6 +71,9 @@
 </script>
 
 <style>
+  .editor {
+    margin-top: 25em;
+  }
   .meta-block {
     margin-bottom: 3rem;
   }
