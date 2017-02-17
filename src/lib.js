@@ -2,14 +2,7 @@ class Choice {
   constructor() {
     this.exchange = null; // child exchange
     this.id = _uid();
-
-    const verbalization = new Verbalization();
-    this.verbalization = verbalization.id;
-
-    return {
-      choice: this,
-      verbalization
-    };
+    this.verbalization = null;
   }
 }
 
@@ -22,9 +15,9 @@ class Exchange {
 }
 
 class Verbalization {
-  constructor(text) {
+  constructor() {
     this.id = _uid();
-    this.text = text || '';
+    this.text = '';
   }
 }
 

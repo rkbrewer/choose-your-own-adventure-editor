@@ -3,18 +3,18 @@
 
     <div class="npc-verbalization-container">
       <label>{{npc || 'NPC'}}</label>
-      <span v-if="!exchange || !exchange.verbalization" @click="createNpcVerbalization">Enter your line here...</span>
+      <button v-if="!exchange || !exchange.verbalization" @click="createNpcVerbalization">Create NPC Line</button>
       <verbalization v-if="exchange && exchange.verbalization" :id="exchange.verbalization"></verbalization>
     </div>
 
     <div class="choice-container">
       <label>Player</label>
-      <span v-if="!exchange.choices.length" @click="createChoice">Enter your line here...</span>
+      <button v-if="!exchange.choices.length" @click="createChoice">Create Player Choice</button>
 
       <choice v-if="activeChoice.id" :id="activeChoice.id"></choice>
 
       <div class="toolbox-hover-top">
-        <button @click="createChoice">Create Another Choice</button>
+        <button @click="createChoice" v-if="!exchange.choices.length">Create Another Choice</button>
         <select v-if="choices.length > 1" :value="activeChoice.id" @change="activateChoice">
           <option v-for="choice in choices" :value="choice.id">{{ textFrom(choice.verbalization) }}</option>
         </select>
@@ -66,15 +66,6 @@
       textFrom(verbalizationId) {
         return this.$store.state.verbalizations.find(item => item.id === verbalizationId).text;
       }
-    },
-    created() {
-      console.log('CREATED ID: ', this.exchange);
-    },
-    beforeMount() {
-      console.log('beforeMount id', this.exchange);
-    },
-    mounted() {
-      console.log('mounted id', this.exchange);
     },
     props: [
       'id'

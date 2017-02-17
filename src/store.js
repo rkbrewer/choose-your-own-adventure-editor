@@ -18,40 +18,20 @@ const store = new Vuex.Store({
     [types.activeChoices]({commit}, {exchangeId, choiceId}) {
       commit(types.activeChoices, {exchangeId, choiceId});
     },
-    /**
-     *
-     * @param commit
-     * @param state
-     * @param exchange - the required parent of the choice, it will be given a reference to the choice.
-     */
-    [types.createChoice]({commit, state}, exchange) {
-      const {choice, verbalization} = new Choice();
-
-      exchange.choices.push(choice.id);
-
+    [types.createChoice]({commit}, exchange) {
+      const choice = new Choice();
+      exchange.choices.push(choice.id); // turn this into an action
       commit(types.createChoice, choice);
-      commit(types.createVerbalization, verbalization);
       commit(types.activeChoices, {exchangeId: exchange.id, choiceId: choice.id});
     },
-
-    /**
-     *
-     * @param commit - vuex mutation caller
-     * @param choice - optional parent of the new exchange
-     */
     [types.createExchange]({commit}, choice) {
       const exchange = new Exchange();
+      // turn this IF into an action
       if (choice) {
         choice.exchange = exchange.id;
       }
       commit(types.createExchange, exchange);
     },
-
-    /**
-     *
-     * @param commit
-     * @param item - a required owner, either an exchange or a choice instance
-     */
     [types.createVerbalization]({commit}, item) {
       const verbalization = new Verbalization();
       item.verbalization = verbalization.id;
@@ -196,3 +176,38 @@ const roughDraft4 = {
   // the "glue" that allows a conversation to be fully rendered. Active choices are NOT persisted, but here just for the UI.
   activeChoices: []
 };
+
+/*
+Most basic implementation:
+1. Auto-create nothing, let everything have a button
+2. Once built, load in normalized data.
+
+// NORMALIZED DATA:
+exchanges = {
+  '1': {
+    verbalization: 2,
+    choices: [3, 4]
+  },
+  '6': {
+    verbalization: 7,
+    choices: [8]
+  }
+},
+choices: {
+  '3': {
+    verbalization: 5,
+    exchange: 6
+  },
+  '8': {
+    verbalization: 9
+    exchange: null
+  }
+}
+verbalization: {
+  '2': { text: 'hi' },
+  '5': { text: 'do you like my hat?' }
+  '7': { text: 'hello' },
+  '9': { text: 'I do not.' }
+}
+
+ */

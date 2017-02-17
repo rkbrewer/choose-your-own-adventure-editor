@@ -1,5 +1,5 @@
 <template>
-  <span class="verbalization" contenteditable="true" @keyup="updateStore">{{text}}</span>
+  <input type="text" class="verbalization" @keyup="updateStore" :value="verbalization.text" />
 </template>
 <script type="text/babel">
   import {mapState} from 'vuex';
@@ -13,26 +13,11 @@
         }
       }),
     },
-    data() {
-      return {
-        text: this.$store.state.verbalizations.find(({id}) => id === this.id).text
-      };
-    },
     methods: {
       updateStore(event) {
-        let {id} = this.verbalization;
-        let text = event.target.textContent;
-        this.$emit('change', event);
-        this.$store.dispatch(types.editVerbalization, {id, text});
-        return true;
+        const text = event.target.value;
+        this.$store.dispatch(types.editVerbalization, {id: this.id, text});
       }
-    },
-    mounted() {
-      this.$el.focus();
-      this.$watch('id', function() {
-        this.text = this.$store.state.verbalizations.find(({id}) => id === this.id).text; // so why does this bomb when I move it to a computed...?
-        this.$el.textContent = this.text; // hack the contenteditable
-      });
     },
     name: 'verbalization',
     props: [

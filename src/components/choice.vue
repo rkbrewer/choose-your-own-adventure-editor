@@ -2,8 +2,9 @@
   <div>
     <span class="choice">
       <verbalization v-if="choice.verbalization" :id="choice.verbalization" @change="onVerbalizationKeyup"></verbalization>
+      <button v-else @click="createVerbalization">Create Verbalization</button>
     </span>
-    <span v-if="!choice.exchange" @click="createExchange">NPC: Enter your line here...</span>
+    <button v-if="!choice.exchange" @click="createExchange">Create Exchange</button>
   </div>
 </template>
 <script type="text/babel">
@@ -27,6 +28,9 @@
         if (!this.choice.exchange){
           this.$store.dispatch(types.createExchange, this.choice);
         }
+      },
+      createVerbalization() {
+        this.$store.dispatch(types.createVerbalization, this.choice);
       },
       onVerbalizationKeyup(event) {
         if (event.keyCode === 9) {
