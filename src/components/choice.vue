@@ -1,7 +1,7 @@
 <template>
   <div>
     <span class="choice">
-      <verbalization v-if="choice.verbalization" :id="choice.verbalization" @change="onVerbalizationKeyup"></verbalization>
+      <verbalization v-if="choice.verbalization" :id="choice.verbalization"></verbalization>
       <button v-else @click="createVerbalization">Create Verbalization</button>
     </span>
     <button v-if="!choice.exchange" @click="createExchange">Create Exchange</button>
@@ -31,16 +31,7 @@
       },
       createVerbalization() {
         this.$store.dispatch(types.createVerbalization, this.choice);
-      },
-      onVerbalizationKeyup(event) {
-        if (event.keyCode === 9) {
-          console.log('TAB! Create an exchange');
-          this.createExchange();
-        }
       }
-    },
-    mounted() {
-
     },
     props: [
       'id'

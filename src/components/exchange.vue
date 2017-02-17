@@ -14,7 +14,7 @@
       <choice v-if="activeChoice.id" :id="activeChoice.id"></choice>
 
       <div class="toolbox-hover-top">
-        <button @click="createChoice" v-if="!exchange.choices.length">Create Another Choice</button>
+        <button @click="createChoice" v-if="exchange.choices.length === 1">Create Another Choice</button>
         <select v-if="choices.length > 1" :value="activeChoice.id" @change="activateChoice">
           <option v-for="choice in choices" :value="choice.id">{{ textFrom(choice.verbalization) }}</option>
         </select>
@@ -40,7 +40,7 @@
       ...mapState({
         activeChoice(state) {
           const activeChoice = state.activeChoices.find(({exchangeId}) => this.id);
-          return activeChoice ? state.choices.find(({id}) => id === activeChoice.choiceId) : {};
+          return activeChoice ? this.choices.find(({id}) => id === activeChoice.choiceId) : {};
         },
         choices(state) {
           return state.choices.filter(({id}) => this.exchange.choices.includes(id))

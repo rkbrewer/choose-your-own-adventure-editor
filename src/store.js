@@ -211,3 +211,16 @@ verbalization: {
 }
 
  */
+/*
+BUG
+1. create a 2nd exchange
+2. see the new exchange's choice have a verbalization state set to the first exchange's choice's verbalization.
+3. Vuex looks correct
+
+Hypothesis:
+Odd rendering bug because I'm adding objects to vuex? Instead of flat observables?
+
+The component devtools looks off:
+The 2nd exchange has a choice component, but I never explicitly created it.
+It's also showing the buttons to create a choice, which should only render if !exchange.choices.length
+ */
