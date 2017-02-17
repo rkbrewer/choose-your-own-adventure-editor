@@ -22,7 +22,9 @@
       updateStore(event) {
         let {id} = this.verbalization;
         let text = event.target.textContent;
+        this.$emit('change', event);
         this.$store.dispatch(types.editVerbalization, {id, text});
+        return true;
       }
     },
     mounted() {

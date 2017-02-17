@@ -13,6 +13,7 @@
     </section>
 
     <section>
+      <!-- TODO rebind to iterate over exchange in activeExchanges -->
       <exchange v-for="exchange in exchanges" :id="exchange.id"></exchange>
       <aside>
         <!-- conversation tree diagram. allows you to click to form relationships? -->
@@ -47,6 +48,9 @@
     },
     computed: {
       ...mapState({
+        activeExchanges(state) {
+          // Follow the line down all active choices of exchanges and choices, defaulting to the first choice if nothing's active.
+        },
         exchanges: state => state.exchanges,
         npc: state => state.npc,
       })

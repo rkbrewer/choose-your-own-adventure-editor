@@ -67,6 +67,15 @@
         return this.$store.state.verbalizations.find(item => item.id === verbalizationId).text;
       }
     },
+    created() {
+      console.log('CREATED ID: ', this.exchange);
+    },
+    beforeMount() {
+      console.log('beforeMount id', this.exchange);
+    },
+    mounted() {
+      console.log('mounted id', this.exchange);
+    },
     props: [
       'id'
     ],
@@ -77,7 +86,6 @@
     display: block;
     opacity: 0.5;
   }
-
   .choice-container {
     position: relative;
   }
