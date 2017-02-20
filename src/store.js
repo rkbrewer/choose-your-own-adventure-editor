@@ -22,8 +22,8 @@ const store = new Vuex.Store({
     [types.createChoice]({commit}, exchange) {
       const choice = new Choice();
       commit(types.createChoice, choice);
-      commit(types.activeChoices, {exchangeId: exchange.id, choiceId: choice.id});
       commit(types.addChoiceToExchange, {exchange, choice});
+      commit(types.activeChoices, {exchangeId: exchange.id, choiceId: choice.id});
     },
     [types.createExchange]({commit}, choice) {
       const exchange = new Exchange();

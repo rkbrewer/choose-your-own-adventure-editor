@@ -14,7 +14,7 @@
       <choice v-if="activeChoice && activeChoice.id" :id="activeChoice.id"></choice>
 
       <div class="toolbox-hover-top">
-        <button @click="createChoice" v-if="exchange.choices.length === 1">Create Another Choice</button>
+        <button @click="createChoice" v-if="exchange.choices.length > 0">Create Another Choice</button>
         <select v-if="choices.length > 1" :value="activeChoice.id" @change="activateChoice">
           <option v-for="choice in choices" :value="choice.id">{{ textFrom(choice.verbalization) }}</option>
         </select>
@@ -64,7 +64,9 @@
         this.$store.dispatch(types.createChoice, this.exchange);
       },
       textFrom(verbalizationId) {
-        return this.$store.state.verbalizations.find(item => item.id === verbalizationId).text;
+        const v = this.$store.state.verbalizations.find(item => item.id === verbalizationId);
+        if (!v) return;
+        return v.text;
       }
     },
     props: [
