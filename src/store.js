@@ -21,7 +21,7 @@ const store = new Vuex.Store({
     },
     [types.createChoice]({commit}, exchange) {
       const choice = new Choice();
-      exchange.choices.push(choice.id); // turn this into an action
+      commit(types.addChoiceToExchange, {exchange, choice});
       commit(types.createChoice, choice);
       commit(types.activeChoices, {exchangeId: exchange.id, choiceId: choice.id});
     },
@@ -52,8 +52,8 @@ const store = new Vuex.Store({
       state.activeChoices = state.activeChoices.filter(item => item.exchangeId !== exchangeId);
       state.activeChoices.push({exchangeId, choiceId});
     },
-    [types.addChoiceToExchange](state, exchange, choiceId) {
-      state.exchanges.find(exchange.id).choices.push(choiceId);
+    [types.addChoiceToExchange](state, {exchange, choice}) {
+      state.exchanges.find(({id}) => id === exchange.id).choices.push(choice.id);
     },
     [types.createChoice](state, choice) {
       state.choices.push(choice);
