@@ -39,8 +39,8 @@
     computed: {
       ...mapState({
         activeChoice(state) {
-          const activeChoice = state.activeChoices.find(({exchangeId}) => this.id);
-          return activeChoice ? this.choices.find(({id}) => id === activeChoice.choiceId) : {};
+          const activeChoice = state.activeChoices.find(({exchangeId}) => exchangeId === this.id);
+          return this.choices.find(({id}) => activeChoice.choiceId === id);
         },
         choices(state) {
           return state.choices.filter(({id}) => this.exchange.choices.includes(id))

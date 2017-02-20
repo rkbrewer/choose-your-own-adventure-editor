@@ -76,7 +76,7 @@
 
 <style>
   .editor {
-    margin-top: 25em;
+    margin-top: 2em;
   }
   .meta-block {
     margin-bottom: 3rem;
