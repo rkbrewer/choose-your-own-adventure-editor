@@ -11,7 +11,7 @@
       <label>Player</label>
       <button v-if="!exchange.choices.length" @click="createChoice">Create Player Choice</button>
 
-      <choice v-if="activeChoice.id" :id="activeChoice.id"></choice>
+      <choice v-if="activeChoice && activeChoice.id" :id="activeChoice.id"></choice>
 
       <div class="toolbox-hover-top">
         <button @click="createChoice" v-if="exchange.choices.length === 1">Create Another Choice</button>

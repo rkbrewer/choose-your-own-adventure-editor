@@ -5,6 +5,7 @@ import {Choice, Exchange, Verbalization} from 'lib';
 
 const types = {
   activeChoices: 'activeChoices',
+  addChoiceToExchange: 'addChoiceToExchange',
   createChoice: 'createChoice',
   createExchange: 'createExchange',
   createVerbalization: 'createVerbalization',
@@ -50,6 +51,9 @@ const store = new Vuex.Store({
       // Swap out the old with the new
       state.activeChoices = state.activeChoices.filter(item => item.exchangeId !== exchangeId);
       state.activeChoices.push({exchangeId, choiceId});
+    },
+    [types.addChoiceToExchange](state, exchange, choiceId) {
+      state.exchanges.find(exchange.id).choices.push(choiceId);
     },
     [types.createChoice](state, choice) {
       state.choices.push(choice);
