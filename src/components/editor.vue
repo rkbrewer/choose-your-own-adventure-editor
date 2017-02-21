@@ -13,8 +13,7 @@
     </section>
 
     <section>
-      <!-- TODO rebind to iterate over exchange in activeExchanges -->
-      <exchange v-for="exchange in exchanges" :id="exchange.id"></exchange>
+      <exchange v-if="activeExchanges.length" v-for="exchange in activeExchanges" :id="exchange.id"></exchange>
       <aside>
         <!-- conversation tree diagram. allows you to click to form relationships? -->
       </aside>
@@ -24,14 +23,6 @@
 
 <script>
   /*
-  - In this abstraction, an NPC has Lines, a PC has Choices.
-  - Given whoever starts one of two Template-Blocks is rendered: <line><choice> or <choice><line>
-  - This Template-Block is repeated for however many lines the author creates FOR THE THREAD.
-  - For each template-block, a Lines or Choice is allowed to be empty (but never both).
-  ----------
-  - If empty blocks are allowable, I can kill the Starts With [PC|NPC] selector, and just use a blank.
-  - lines and choices need id's, utterance
-  ----------
   - Anatomy of a Script: http://www.shortlist.com/entertainment/films/the-anatomy-of-a-film-script
   ----------
   - An Exchange is a Verbalization that has one-to-manyChoice(s).
@@ -49,7 +40,11 @@
     computed: {
       ...mapState({
         activeExchanges(state) {
-          // Follow the line down all active choices of exchanges and choices, defaulting to the first choice if nothing's active.
+          if (!state.activeChoices.length) {
+            return [];
+          }
+          return state.activeChoices
+            .map(({exchangeId}) => state.exchanges.find(({id}) => id === exchangeId));
         },
         exchanges: state => state.exchanges,
         npc: state => state.npc,
@@ -67,8 +62,13 @@
     },
     mounted() {
       if (!this.exchanges.length) {
-        this.$store.dispatch(types.createExchange);
+//        this.$store.dispatch(types.createExchange).then(exchange => {
+//          this.$store.dispatch(types.createChoice, exchange);
+//        });
+        // TODO to fix the issue, let createExchange actions also create a choice... which will leads to that choice being active, which leads to the exchange being rendered.
+        this.$store.dispatch(types.createExchange)
       }
+
     },
     name: 'editor'
   }

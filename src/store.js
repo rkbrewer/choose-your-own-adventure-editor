@@ -19,19 +19,25 @@ const store = new Vuex.Store({
     [types.activeChoices]({commit}, {exchangeId, choiceId}) {
       commit(types.activeChoices, {exchangeId, choiceId});
     },
-    [types.createChoice]({commit}, exchange) {
+    [types.createChoice]({commit, dispatch}, exchange) {
       const choice = new Choice();
       commit(types.createChoice, choice);
       commit(types.addChoiceToExchange, {exchange, choice});
+      dispatch(types.createVerbalization, choice);
       commit(types.activeChoices, {exchangeId: exchange.id, choiceId: choice.id});
     },
-    [types.createExchange]({commit}, choice) {
+    [types.createExchange]({commit, dispatch}, choice) {
       const exchange = new Exchange();
-      // turn this IF into an action
+      commit(types.createExchange, exchange);
+
+      // Link this exchange to the parent choice if it was passed in
       if (choice) {
         choice.exchange = exchange.id;
       }
-      commit(types.createExchange, exchange);
+
+      // create items on the exchange
+      dispatch(types.createChoice, exchange);
+      dispatch(types.createVerbalization, exchange);
     },
     [types.createVerbalization]({commit}, item) {
       const verbalization = new Verbalization();
