@@ -77,7 +77,6 @@
     border: 1px solid rgba(255,255,255, 0.3);
   }
   .form-items {
-    margin-bottom: 3rem;
     border: 1px solid rgba(255,255,255, 0.3);
   }
   .form-item label,
@@ -85,6 +84,10 @@
   .form-item textarea {
     font-size: 12px;
     color: #aaa;
+  }
+  .form-item label {
+    width: 3em;
+    display: inline-block;
   }
   .form-item input {
     background: rgba(255,255,255, 0.1);

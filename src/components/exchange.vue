@@ -1,23 +1,25 @@
 <template>
   <div class="exchange">
 
-    <div class="form-item">
-      <label>{{npc || 'NPC'}}</label>
-      <verbalization v-if="exchange && exchange.verbalization" :id="exchange.verbalization"></verbalization>
-    </div>
-
-    <div class="choice-container">
-      <choice v-if="activeChoice && activeChoice.id" :id="activeChoice.id"></choice>
-      <div class="choice-toolbox">
-        <button @click="createChoice" v-if="exchange.choices.length > 0">Create Another Choice</button>
-        <select v-if="choices.length > 1" :value="activeChoice.id" @change="activateChoice">
-          <option v-for="choice in choices" :value="choice.id">{{ textFrom(choice.verbalization) }}</option>
-        </select>
+    <fieldset class="form-items">
+      <div class="form-item">
+        <label>{{npc || 'NPC'}}</label>
+        <verbalization v-if="exchange && exchange.verbalization" :id="exchange.verbalization"></verbalization>
       </div>
-    </div>
 
-    <div>
-      <button v-if="!activeChoice.exchange" @click="createExchange">Create Exchange</button>
+      <div class="choice-container">
+        <choice v-if="activeChoice && activeChoice.id" :id="activeChoice.id"></choice>
+        <div class="choice-toolbox">
+          <button @click="createChoice" v-if="exchange.choices.length > 0">Create Another Choice</button>
+          <select v-if="choices.length > 1" :value="activeChoice.id" @change="activateChoice">
+            <option v-for="choice in choices" :value="choice.id">{{ textFrom(choice.verbalization) }}</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <div v-if="!activeChoice.exchange" class="next-exchange">
+      <button @click="createExchange">Create Exchange</button>
     </div>
 
   </div>
@@ -74,7 +76,15 @@
   };
 </script>
 <style>
+  .form-items {
+
+  }
   .choice-container > * {
     display: inline-block;
+  }
+  .next-exchange {
+    padding: 2rem 0;
+    text-align: center;
+    border: 1px solid rgba(255,255,255, 0.3);
   }
 </style>
