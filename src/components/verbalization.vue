@@ -25,15 +25,3 @@
     ]
   };
 </script>
-<style>
-  .verbalization {
-    color: #ddd;
-    display: inline-block;
-    line-height: 1.3rem;
-    min-width: 3em;
-  }
-  .verbalization:focus {
-    border-bottom: 1px dotted #42b983;
-    outline: none;
-  }
-</style>

@@ -1,24 +1,23 @@
 <template>
   <div class="exchange">
 
-    <div class="npc-verbalization-container">
+    <div class="form-item">
       <label>{{npc || 'NPC'}}</label>
-      <button v-if="!exchange || !exchange.verbalization" @click="createNpcVerbalization">Create NPC Line</button>
       <verbalization v-if="exchange && exchange.verbalization" :id="exchange.verbalization"></verbalization>
     </div>
 
     <div class="choice-container">
-      <label>Player</label>
-      <button v-if="!exchange.choices.length" @click="createChoice">Create Player Choice</button>
-
       <choice v-if="activeChoice && activeChoice.id" :id="activeChoice.id"></choice>
-
-      <div class="toolbox-hover-top">
+      <div class="choice-toolbox">
         <button @click="createChoice" v-if="exchange.choices.length > 0">Create Another Choice</button>
         <select v-if="choices.length > 1" :value="activeChoice.id" @change="activateChoice">
           <option v-for="choice in choices" :value="choice.id">{{ textFrom(choice.verbalization) }}</option>
         </select>
       </div>
+    </div>
+
+    <div>
+      <button v-if="!activeChoice.exchange" @click="createExchange">Create Exchange</button>
     </div>
 
   </div>
@@ -57,11 +56,11 @@
         let choiceId = $event.target.value;
         this.$store.dispatch(types.activeChoices, {exchangeId, choiceId});
       },
-      createNpcVerbalization() {
-        this.$store.dispatch(types.createVerbalization, this.exchange);
-      },
       createChoice() {
         this.$store.dispatch(types.createChoice, this.exchange);
+      },
+      createExchange() {
+        this.$store.dispatch(types.createExchange, this.activeChoice);
       },
       textFrom(verbalizationId) {
         const v = this.$store.state.verbalizations.find(item => item.id === verbalizationId);
@@ -74,18 +73,8 @@
     ],
   };
 </script>
-<style scoped>
-  label {
-    display: block;
-    opacity: 0.5;
-  }
-  .choice-container {
-    position: relative;
-  }
-  .toolbox-hover-top {
-    // display: none;
-    left: 0;
-    position: absolute;
-    top: -1rem;
+<style>
+  .choice-container > * {
+    display: inline-block;
   }
 </style>

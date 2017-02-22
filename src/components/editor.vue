@@ -1,19 +1,19 @@
 <template>
   <div class="editor">
     <h1>Conversation Editor</h1>
-    <section class="meta-block">
-      <div class="meta-field">
+    <fieldset class="form-items">
+      <div class="form-item">
         <label>Title: </label>
         <input type="text" v-model="title">
       </div>
-      <div class="meta-field">
+      <div class="form-item">
         <label>NPC: </label>
         <input type="text" :value="npc" @change="updateNpc">
       </div>
-    </section>
+    </fieldset>
 
     <section>
-      <exchange v-if="activeExchanges.length" v-for="exchange in activeExchanges" :id="exchange.id"></exchange>
+      <exchange v-if="activeExchanges.length" v-for="exchange in activeExchanges" :id="exchange.id" class="block"></exchange>
       <aside>
         <!-- conversation tree diagram. allows you to click to form relationships? -->
       </aside>
@@ -62,13 +62,8 @@
     },
     mounted() {
       if (!this.exchanges.length) {
-//        this.$store.dispatch(types.createExchange).then(exchange => {
-//          this.$store.dispatch(types.createChoice, exchange);
-//        });
-        // TODO to fix the issue, let createExchange actions also create a choice... which will leads to that choice being active, which leads to the exchange being rendered.
         this.$store.dispatch(types.createExchange)
       }
-
     },
     name: 'editor'
   }
@@ -77,23 +72,23 @@
 <style>
   .editor {
     margin-top: 2em;
+    max-width: 70%;
+    margin-left:200px;
+    border: 1px solid rgba(255,255,255, 0.3);
   }
-  .meta-block {
+  .form-items {
     margin-bottom: 3rem;
+    border: 1px solid rgba(255,255,255, 0.3);
   }
-  .meta-field {
+  .form-item label,
+  .form-item input,
+  .form-item textarea {
+    font-size: 12px;
     color: #aaa;
-    display: inline-block;
-    margin: 0 3rem;
   }
-  input {
-    background: none;
-    border: none;
-    border-bottom: 2px solid #297452;
-    color: #ddd;
-    padding: 0.5rem;
-  }
-  input:focus {
-    outline: none;
+  .form-item input {
+    background: rgba(255,255,255, 0.1);
+    border: 1px solid rgba(255,255,255, 0.3);
+    border-radius: 2px;
   }
 </style>

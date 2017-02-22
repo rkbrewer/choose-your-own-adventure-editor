@@ -1,10 +1,7 @@
 <template>
-  <div>
-    <span class="choice">
-      <verbalization v-if="choice.verbalization" :id="choice.verbalization"></verbalization>
-      <button v-else @click="createVerbalization">Create Verbalization</button>
-    </span>
-    <button v-if="!choice.exchange" @click="createExchange">Create Exchange</button>
+  <div class="form-item choice-form-item">
+    <label>Player</label>
+    <verbalization v-if="choice.verbalization" :id="choice.verbalization"></verbalization>
   </div>
 </template>
 <script type="text/babel">
@@ -22,16 +19,6 @@
           return state.choices.find(({id}) => id === this.id);
         },
       }),
-    },
-    methods: {
-      createExchange() {
-        if (!this.choice.exchange){
-          this.$store.dispatch(types.createExchange, this.choice);
-        }
-      },
-      createVerbalization() {
-        this.$store.dispatch(types.createVerbalization, this.choice);
-      }
     },
     props: [
       'id'
