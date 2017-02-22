@@ -23,6 +23,9 @@
 
     <div v-if="!activeChoice.exchange" class="next-exchange">
       <button @click="createExchange">Create Exchange</button>
+      <select>
+        <option>Link To Existing Exchange</option>
+      </select>
     </div>
 
   </div>

@@ -233,4 +233,61 @@ Odd rendering bug because I'm adding objects to vuex? Instead of flat observable
 The component devtools looks off:
 The 2nd exchange has a choice component, but I never explicitly created it.
 It's also showing the buttons to create a choice, which should only render if !exchange.choices.length
+
+
+
+Rough Draft 5, following Google Firebase's Data Structure recommendations:
+
+const state = {
+  // Exchanges contain only meta info about each exchange stored under the exchange's uid
+  exchanges: {
+    uidE1: {
+      verbalization: 'uidV1',
+      choices: {
+        uidC1: true,
+        uidC2: true,
+      }
+    }
+  },
+
+  // Choices are easily accessible and stored by exchange id
+  choices: {
+    uidE1: {
+      uidC1: {
+        verbalization: 'uidV2'
+        exchange: 'uidE2'
+      },
+      uidC2: {
+        verbalization: 'uidV3'
+        exchange: 'uidE3'
+      }
+    },
+    uidE2: {
+      ...
+    }
+  },
+
+  verbalizations: {
+    uidE1: {
+      uidV1: 'We are the UrQuan!',
+      uidV2: 'Uh, ok.'
+    },
+    ...
+  },
+
+  activeExchanges: {
+    uidE1: true
+  }
+}
+
+0. When creating an Exchange, a choice and 2 Verbalizations also get created.
+1. Start w/a Default Exchange & Choice & 2 Verbalizations. No second exchange. Has One Active Choice & one Active Exchange
+2. Create 2nd Exchange
+
+A choice SHOULD only active if its exchange is active... (This might be a bug in my current set up.)
+Active Exchanges have active choices, and active choices activate exchanges.
+
+1. An Active Exchange's Active Choice points to a) an empty exchange (create new / select existing) or b) the exchange
+linked by the choice.
+
  */
