@@ -8,7 +8,10 @@
       </div>
 
       <div class="choice-container">
-        <choice v-if="activeChoice && activeChoice.id" :id="activeChoice.id"></choice>
+        <div v-if="activeChoice" class="form-item choice-form-item">
+          <label>Player</label>
+          <verbalization v-if="activeChoice" :id="activeChoice.verbalization"></verbalization>
+        </div>
         <div class="choice-toolbox">
           <button @click="createChoice" v-if="exchange.choices.length > 0">Create Another Choice</button>
           <select v-if="choices.length > 1" :value="activeChoice.id" @change="activateChoice">

@@ -13,7 +13,7 @@
     </fieldset>
 
     <section>
-      <exchange v-if="activeExchanges.length" v-for="exchange in activeExchanges" :id="exchange.id" class="block"></exchange>
+      <exchange v-if="activeExchanges.length" v-for="exchange in activeExchanges" :id="exchange.id" track-by="$index" class="block"></exchange>
       <aside>
         <!-- conversation tree diagram. allows you to click to form relationships? -->
       </aside>
