@@ -43,8 +43,8 @@
           if (!state.activeChoices.length) {
             return [];
           }
-          return state.activeChoices
-            .map(({exchangeId}) => state.exchanges.find(({id}) => id === exchangeId));
+
+          return Object.keys(state.activeChoices).map(id => state.exchanges[id]);
         },
         exchanges: state => state.exchanges,
         npc: state => state.npc,

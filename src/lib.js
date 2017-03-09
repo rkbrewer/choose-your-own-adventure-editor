@@ -1,16 +1,16 @@
 class Choice {
-  constructor() {
+  constructor(verbalizationId) {
     this.exchange = null; // child exchange
     this.id = _uid();
-    this.verbalization = null;
+    this.verbalization = verbalizationId;
   }
 }
 
 class Exchange {
-  constructor() {
-    this.choices = [];
+  constructor(verbalizationId, choiceId) {
+    this.choices = [choiceId];
     this.id = _uid();
-    this.verbalization = null;
+    this.verbalization = verbalizationId;
   }
 }
 

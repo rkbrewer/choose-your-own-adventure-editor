@@ -3,9 +3,14 @@ import Vuex from 'vuex';
 
 import {Choice, Exchange, Verbalization} from 'lib';
 
+function uid() {
+  return Math.random().toString(32).slice(2);
+}
+
 const types = {
   activeChoices: 'activeChoices',
   addChoiceToExchange: 'addChoiceToExchange',
+  addExchangeToChoice: 'addExchangeToChoice',
   createChoice: 'createChoice',
   createExchange: 'createExchange',
   createVerbalization: 'createVerbalization',
@@ -20,24 +25,31 @@ const store = new Vuex.Store({
       commit(types.activeChoices, {exchangeId, choiceId});
     },
     [types.createChoice]({commit, dispatch}, exchange) {
-      const choice = new Choice();
+      const verbalization = new Verbalization();
+      const choice = new Choice(verbalization.id);
+
+      commit(types.createVerbalization, verbalization);
       commit(types.createChoice, choice);
       commit(types.addChoiceToExchange, {exchange, choice});
-      dispatch(types.createVerbalization, choice);
+
       commit(types.activeChoices, {exchangeId: exchange.id, choiceId: choice.id});
     },
-    [types.createExchange]({commit, dispatch}, choice) {
-      const exchange = new Exchange();
-      commit(types.createExchange, exchange);
+    [types.createExchange]({commit, dispatch}, parentChoice) {
+      const v1 = new Verbalization();
+      const v2 = new Verbalization();
+      const c = new Choice(v1.id);
+      const e = new Exchange(v2.id, c.id);
 
-      // Link this exchange to the parent choice if it was passed in
-      if (choice) {
-        choice.exchange = exchange.id;
+      commit(types.createVerbalization, v1);
+      commit(types.createVerbalization, v2);
+      commit(types.createChoice, c);
+      commit(types.createExchange, e);
+
+      if (parentChoice) {
+        commit(types.addExchangeToChoice, {exchange, choice});
       }
 
-      // create items on the exchange
-      dispatch(types.createChoice, exchange);
-      dispatch(types.createVerbalization, exchange);
+      commit(types.activeChoices, {exchangeId: e.id, choiceId: c.id});
     },
     [types.createVerbalization]({commit}, item) {
       const verbalization = new Verbalization();
@@ -54,24 +66,37 @@ const store = new Vuex.Store({
 
   mutations: {
     [types.activeChoices](state, {exchangeId, choiceId}) {
-      // Swap out the old with the new
-      state.activeChoices = state.activeChoices.filter(item => item.exchangeId !== exchangeId);
-      state.activeChoices.push({exchangeId, choiceId});
+      state.activeChoices = {
+        ...state.activeChoices,
+        [exchangeId]: choiceId
+      };
     },
     [types.addChoiceToExchange](state, {exchange, choice}) {
-      state.exchanges.find(({id}) => id === exchange.id).choices.push(choice.id);
+      state.exchanges[exchange.id].choices.push(choice.id);
+    },
+    [types.addExchangeToChoice](state, {exchange, choice}) {
+      state.choices[choice.id].exchange = exchange.id;
     },
     [types.createChoice](state, choice) {
-      state.choices.push(choice);
+      state.choices = {
+        ...state.choices,
+        [choice.id]: choice
+      };
     },
     [types.createExchange](state, exchange) {
-      state.exchanges.push(exchange);
+      state.exchanges = {
+        ...state.exchanges,
+        [exchange.id]: exchange
+      };
     },
     [types.createVerbalization](state, verbalization) {
-      state.verbalizations.push(verbalization);
+      state.verbalizations = {
+        ...state.verbalizations,
+        [verbalization.id]: verbalization
+      };
     },
     [types.editVerbalization](state, {id, text}) {
-      state.verbalizations.find(item => item.id === id).text = text;
+      state.verbalizations[id].text = text;
     },
     [types.npc](state, npc) {
       state.npc = npc;
@@ -79,16 +104,15 @@ const store = new Vuex.Store({
   },
 
   state: {
-    activeChoices:[],
-    choices: [],
-    exchanges: [],
-    npc: '',
-    verbalizations: []
+    activeChoices:{},
+    choices: {},
+    conversations: {},
+    exchanges: {},
+    verbalizations: {}
   }
 });
 
 export {types, store};
-
 const conversationRoughDraft = {
   exchanges: [
     {
@@ -106,7 +130,6 @@ const conversationRoughDraft = {
     }
   ]
 };
-
 const conversationRoughDraft2 = {
   exchange: {
     id: 1,
@@ -136,7 +159,6 @@ const conversationRoughDraft2 = {
     ]
   }
 };
-
 const roughDraft3 = {
   exchanges: [
     {
@@ -156,7 +178,6 @@ const roughDraft3 = {
     }
   ]
 };
-
 // Go with this one. It's easier to code against.
 /*
  As a user, push a button to add a choice to start writing on.
@@ -172,7 +193,6 @@ const roughDraft3 = {
  But for now I ignore the New Consequence button because I want to make another Choice.
  (TODO do I look up to the npc's verbalization and see an Add Another Choice button? Or do I look to where I'm writing?)
  */
-
 // Does creating a new Choice create a new Exchange? No. Because a Choice could point to an existing Exchange.
 // Push a button to createChoice, then immediately setConsequentialExchange or createExchange (which then automatically sets this as the conesequential exchange)
 const roughDraft4 = {
@@ -186,7 +206,6 @@ const roughDraft4 = {
   // the "glue" that allows a conversation to be fully rendered. Active choices are NOT persisted, but here just for the UI.
   activeChoices: []
 };
-
 /*
 Most basic implementation:
 1. Auto-create nothing, let everything have a button
@@ -233,9 +252,8 @@ Odd rendering bug because I'm adding objects to vuex? Instead of flat observable
 The component devtools looks off:
 The 2nd exchange has a choice component, but I never explicitly created it.
 It's also showing the buttons to create a choice, which should only render if !exchange.choices.length
-
-
-
+*/
+/*
 Rough Draft 5, following Google Firebase's Data Structure recommendations:
 
 const state = {
@@ -279,7 +297,8 @@ const state = {
     uidE1: true
   }
 }
-
+*/
+/*
 0. When creating an Exchange, a choice and 2 Verbalizations also get created.
 1. Start w/a Default Exchange & Choice & 2 Verbalizations. No second exchange. Has One Active Choice & one Active Exchange
 2. Create 2nd Exchange
@@ -289,5 +308,52 @@ Active Exchanges have active choices, and active choices activate exchanges.
 
 1. An Active Exchange's Active Choice points to a) an empty exchange (create new / select existing) or b) the exchange
 linked by the choice.
+
+state = {
+  conversation: {
+    con1: {
+      name: '',
+      npc: ''
+      timestamp: '',
+    }
+  }
+  exchanges: {
+    con1: {
+      e1: {
+        verbalization: 'v1',
+        choices: {
+          c1: true,
+          ...
+        }
+      },
+      ...
+    }
+  },
+  choices: {
+    con1: {
+      e1: {
+        c1: {
+          verbalization: 'v2',
+          exchange: 'e2'
+        },
+        ...
+      },
+      ...
+    }
+  },
+  verbalizations: {
+    con1: {
+      v1: '',
+      v2: '',
+      ...
+    }
+  },
+  activeChoices: {
+    con1: {
+      e1: 'c1',
+      e2: 'c1',
+    }
+  }
+};
 
  */
